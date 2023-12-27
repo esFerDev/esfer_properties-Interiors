@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>esfer_properties: Interiors</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        #gallery img {
+            width: 160px;
+            height: 160px;
+            margin: 10px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        #lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #lightbox img {
+            max-width: 80%;
+            max-height: 80%;
+        }
+
+        .previous,
+        .next {
+          cursor: pointer;
+          position: absolute;
+          top: 50%;
+          width: auto;
+          padding: 16px;
+          margin-top: -50px;
+          color: white;
+          font-weight: bold;
+          font-size: 20px;
+          transition: 0.6s ease;
+          border-radius: 0 3px 3px 0;
+          user-select: none;
+          -webkit-user-select: none;
+        }
+
+        .previous {
+            left: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .previous:hover,
+        .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .close {
+            color: white;
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 35px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #999;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="interiorsID">esfer_properties: Interiors</h1>
+
+    <div id="gallery"></div>
+
+    <div id="lightbox">
+        <span class="close pointer" onclick="closeLightbox()">&times;</span>
+        <div id="lightbox-buttons">
+            <a class="previous" onclick="showImage(-1)">&#10094;</a>
+            <a class="next" onclick="showImage(1)">&#10095;</a>
+        </div>
+        <img id="lightbox-image">
+    </div>
+
+    <script>
+        const folderPath = 'interiors/';
+        const maxImages = 35;
+        const gallery = document.getElementById('gallery');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const interiorsID = document.getElementById('interiorsID');
+        let currentImageIndex = 0;
+
+        for (let i = 1; i <= maxImages; i++) {
+            const img = document.createElement('img');
+            img.src = `${folderPath}${i}.png`;
+            img.alt = `Imagen ${i}`;
+
+            img.addEventListener('error', function() {
+                gallery.removeChild(img);
+            });
+            
+            img.addEventListener('click', function() {
+                showLightbox(i);
+            });
+
+            gallery.appendChild(img);
+        }
+
+        function showLightbox(index) {
+            currentImageIndex = index;
+
+            const imageUrl = `${folderPath}${index}.png`;
+            const imageExists = checkImageExists(imageUrl);
+
+            if (imageExists) {
+                lightboxImage.src = imageUrl;
+                lightbox.style.display = 'flex';
+
+                updateNavigationButtons();
+            } else {
+                console.error(`Imagen ${index} no encontrada.`);
+            }
+        }
+
+        function showImage(offset) {
+            const oldImageIndex = currentImageIndex;
+            currentImageIndex += offset;
+
+            const imageUrl = `${folderPath}${currentImageIndex}.png`;
+            const imageExists = checkImageExists(imageUrl);
+
+            if (imageExists) {
+                lightboxImage.src = imageUrl;
+
+                updateNavigationButtons();
+            } else {
+                currentImageIndex = oldImageIndex;
+            }
+        }
+
+        function updateNavigationButtons() {
+            interiorsID.innerText = 'Interior ID: ' + currentImageIndex;
+        }
+
+        function checkImageExists(imageUrl) {
+            const img = new Image();
+            img.src = imageUrl;
+
+            if (img.complete) {
+                return true;
+            } else {
+                img.onload = () => {
+                    return true;
+                };
+              
+                img.onerror = () => {
+                    return false;
+                };
+            }
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            interiorsID.innerText = 'esfer_properties: Interiors';
+        }
+    </script>
+</body>
+</html>
